@@ -1,0 +1,105 @@
+class Movie:
+    def __init__(self, title, director, year, genre, rating):
+        self.title = title
+        self.director = director
+        self.year = year
+        self.genre = genre
+        self.rating = rating
+
+    def __str__(self):
+        return (f"Title: {self.title}\n"
+                f"Director: {self.director}\n"
+                f"Year: {self.year}\n"
+                f"Genre: {self.genre}\n"
+                f"Rating: {self.rating}\n")
+
+class MovieDatabase:
+    def __init__(self):
+        self.movies = {}  #To Dictionary to hold movie_id as key and movie object as value
+
+    def add_movie(self, movie_id, movie):  #To Add a movie to the database
+        if movie_id not in self.movies:
+            self.movies[movie_id] = movie
+            print(f"Movie added: {movie_id}")
+        else:
+            print(f"Error: Movie ID {movie_id} already exists.")
+
+    def remove_movie(self, movie_id):  #To Remove a movie from the database
+        if movie_id in self.movies:
+            del self.movies[movie_id]
+            print(f"Movie removed: {movie_id}")
+        else:
+            print(f"Error: Movie ID {movie_id} not found.")
+
+    def update_movie(self, movie_id, **kwargs):  #To Update the details of an existing movie
+        if movie_id in self.movies:
+            movie = self.movies[movie_id]
+            for key, value in kwargs.items():
+                if hasattr(movie, key):
+                    setattr(movie, key, value)
+                    print(f"Updated {key} of Movie ID {movie_id} to {value}")
+                else:
+                    print(f"Error: Attribute {key} does not exist.")
+        else:
+            print(f"Error: Movie ID {movie_id} not found.")
+
+    def search_movies(self, **criteria):  #To Search for movies based on the given criteria
+        result = []
+        for movie_id, movie in self.movies.items():
+            match = True
+            for key, value in criteria.items():
+                if not hasattr(movie, key) or getattr(movie, key) != value:
+                    match = False
+                    break
+            if match:
+                result.append((movie_id, movie))
+        return result
+
+    def display_all_movies(self):  #To Display all movies in the database
+        if not self.movies:
+            print("No movies in the database.")
+        else:
+            for movie_id, movie in self.movies.items():
+                print(f"ID: {movie_id}")
+                print(movie)
+                print()
+
+def main():  #To Create movie data
+    movie1 = Movie("Greatest of all time", "Venkat Prabhu", 2024, "Action", 8.5)
+    movie2 = Movie("Demonte Colony 2", "R. Ajay Gnanamuthu", 2024, "Horror", 7.9)
+    movie3 = Movie("Deadpool 3", "David Leitch", 2024, "Action, Comedy", 8.5)
+    movie4 = Movie("Ghost Busters Frozen Empire", "Gil Kenan", 2024, "Action", 7.0)
+    movie5 = Movie("Tamasha", "Imtiaz Ali", 2015, "Drama", 7.4)
+    movie6 = Movie("Dear Zindagi", "Gowri Shindae", 2016, "Drama", 7.4)
+    movie7 = Movie("The Summer I Turned Pretty", "Zoe Cassavetes", 2022, "Romance", 7.5)
+    movie8 = Movie("The Vampire Diaries", "Julie Plec", 2009, "Fantasy", 7.9)
+
+    db = MovieDatabase()  #To Create a MovieDatabase instance
+
+    db.add_movie("001", movie1)
+    db.add_movie("002", movie2)
+    db.add_movie("003", movie3)
+    db.add_movie("004", movie4)
+    db.add_movie("005", movie5)
+    db.add_movie("006", movie6)
+    db.add_movie("007", movie7)
+    db.add_movie("008", movie8)
+
+    print("All Movies:")  #To Display all the movies in the database
+    db.display_all_movies()
+
+    db.update_movie("001", rating=9.8)  #To Update a movie rating
+
+    print("Search Result for Director 'Venkat Prabhu':")  #To Search for movies by director
+    search_results = db.search_movies(director="Venkat Prabhu")
+    for movie_id, movie in search_results:
+        print(f"ID: {movie_id}")
+        print(movie)
+
+    db.remove_movie("002")  #  To Remove a movie from the database
+
+    print("All Movies After Removal:")  # Display all the movies after removal
+    db.display_all_movies()
+
+if __name__ == "__main__":
+    main()
